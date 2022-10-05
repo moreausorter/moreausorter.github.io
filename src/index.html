@@ -1,0 +1,16 @@
+<body>
+    <form id="MoreauInputForm">
+        <input type="file" id="MoreauCsv" accept=".csv" />
+        <br />
+        <input type="submit" value="Submit" />
+    </form>
+    <script>
+        const inputForm = document.getElementById("MoreauInputForm");
+        const csvFile = document.getElementById("MoreauCsv");
+
+        inputForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            alert("csv submitted");
+        });
+    </script>
+</body>
