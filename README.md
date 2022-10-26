@@ -5,8 +5,8 @@ This group of individuals, working closely with Assistant Professor Shreya Kumar
 
 Project Members:
 
-Anna Albertini
-Pranay Reddy
-Jacob Sardo
-Kian Shinaver
+Anna Albertini,
+Pranay Reddy,
+Jacob Sardo,
+Kian Shinaver,
 Jamie Youn
