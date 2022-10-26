@@ -1,31 +1,20 @@
 const inputForm = document.getElementById("MoreauInputForm");
 const csvFile = document.getElementById("MoreauCsv");
 
-function csvToArray(str, delimiter = ",") {
-    // slice from start of text to the first \n index
-    // use split to create an array from string by delimiter
-    const headers = str.slice(0, str.indexOf("\r")).split(delimiter);
+function csvToArray(stringVal, delimiter) {
+  // use split to create an array from string by delimiter
+  const [keys, ...rest] = stringVal
+    .trim()
+    .split("\n")
+    .map((item) => item.split(delimiter));
 
-    // slice from \n index + 1 to the end of the text
-    // use split to create an array of each csv value row
-    const rows = str.slice(str.indexOf("\r") + 1).split("\r");
-
-    // Map the rows
-    // split values from each row into an array
-    // use headers.reduce to create an object
-    // object properties derived from headers:values
-    // the object passed as an element of the array
-    const arr = rows.map(function (row) {
-        const values = row.split(delimiter);
-        const el = headers.reduce(function (object, header, index) {
-            object[header] = values[index];
-            return object;
-        }, {});
-        return el;
-    });
-
-    // return the array
-    return arr;
+// Map the rows
+  const newArray = rest.map((item) => {
+    const object = {};
+    keys.forEach((key, index) => (object[key] = item.at(index)));
+    return object;
+  });
+  return newArray;
 }
 
 inputForm.addEventListener("submit", function (e) {
@@ -35,13 +24,9 @@ inputForm.addEventListener("submit", function (e) {
 
     reader.onload = function (e) {
         const text = e.target.result;
-        const data = csvToArray(text);
-        document.write(JSON.stringify(data[0]));
-        document.write('\n\n');
-        document.write(JSON.stringify(data[1]));
-        document.write('\n\n');
-        document.write(JSON.stringify(data[2]));
-        document.write('\n\n');
+        const data = csvToArray(text,",");
+        // print to screen to check if array was created correctly
+        document.write(JSON.stringify(data, null,4));
     };
     reader.readAsText(input);
 });
