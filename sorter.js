@@ -2,10 +2,11 @@ const inputForm = document.getElementById("MoreauInputForm");
 const csvFile = document.getElementById("MoreauCsv");
 
 class Student {
-  constructor(id, classes, neighborhood) {
+  constructor(id, classes, neighborhood, assigned) {
     this.id = id;
     this.classes = classes;
     this.neighborhood = neighborhood;
+    this.assigned = assigned;
   }
 }
 
@@ -45,7 +46,7 @@ classes:
 ['516000', '522015'],
 ['234030', '240045'],
 ['522030', '528045']]
-neighborhood: 6 
+neighborhood: 6
 **************************************/
 function getStudentsFromData(data) {
   let idsToStudents = new Map();
@@ -62,7 +63,7 @@ function getStudentsFromData(data) {
     if (idsToStudents.has(id)) {
       currStudent = idsToStudents.get(id);
     } else {
-      currStudent = new Student(id, [], "");
+      currStudent = new Student(id, [], "", false);
       idsToStudents.set(id, currStudent);
       allStudents.push(currStudent);
     }
@@ -97,9 +98,33 @@ function timeToMinutes(timeString, day) {
   if (timeString.split(" ")[1] == "PM") minutes += (12 * 60);
 
   let hourAndSecs = timeString.split(" ")[0].split(":");
-  minutes += hourAndSecs[0] * 60;
+  minutes += (hourAndSecs[0] * 60);
   minutes += hourAndSecs[1];
   return minutes;
+}
+
+// get student by id
+function getStudentById(students,id) {
+  return students[id-1];
+}
+
+// returns total time spent in class by a particular student each week
+function getTotalClassTime(students,id) {
+  let totalMin = 0;
+  getClassesById(students,id).map(function(curClass){
+    totalMin += (curClass[1]-curClass[0])
+  });
+  return totalMin;
+}
+
+// get neighborhood by student id
+function getNeighborhoodById(students,id) {
+  return getStudentById(students,id).neighborhood;
+}
+
+// get classes by student id
+function getClassesById(students,id) {
+  return getStudentById(students,id).classes;
 }
 
 inputForm.addEventListener("submit", function (e) {
@@ -112,9 +137,10 @@ inputForm.addEventListener("submit", function (e) {
     const data = csvToArray(text, ",");
     // Read raw JSON into student classes
     let students = getStudentsFromData(data);
-
+  //  let test = getTotalClassTime(students,1);
     // print to screen to check if array was created correctly
     document.write(JSON.stringify(students[0]));
+  //  document.write(test);
     // document.write(JSON.stringify(data, null, 4));
   };
   reader.readAsText(input);
