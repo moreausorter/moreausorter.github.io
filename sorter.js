@@ -92,12 +92,8 @@ function getStudentsAndMoreauClassesFromData(data) {
 
 // Converts a time string (i.e 11:00 AM) and a day (i.e. M)
 // to the corresponding minute of of the week (Monday morning is minute 0)
-let first = true;
 function timeToMinutes(timeString, day) {
   let minutes = 0;
-  if (first) {
-    console.log(day);
-  }
   if (day == "T") minutes += (1 * 24 * 60);
   if (day == "W") minutes += (2 * 24 * 60);
   if (day == "R") minutes += (3 * 24 * 60);
@@ -105,22 +101,9 @@ function timeToMinutes(timeString, day) {
 
   if (timeString.split(" ")[1] == "PM") minutes += (12 * 60);
 
-  if (first) {
-    console.log(minutes);
-  }
-
   let hourAndSecs = timeString.split(" ")[0].split(":");
-  if (first) {
-    console.log("----------");
-    console.log(hourAndSecs[0]);
-    console.log(hourAndSecs[1]);
-  }
   minutes += (hourAndSecs[0] * 60);
   minutes += parseInt(hourAndSecs[1]);
-  if (first) {
-    console.log(minutes);
-  }
-  first = false;
   return minutes;
 }
 
