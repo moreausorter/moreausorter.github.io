@@ -10,6 +10,10 @@ class Student {
   }
 }
 
+// GLOBAL VARIABLES
+let STUDENTS = [];
+let MOREAU_CLASSES = [];
+
 function csvToArray(stringVal, delimiter) {
   // use split to create an array from string by delimiter
   const [keys, ...rest] = stringVal
@@ -48,9 +52,8 @@ classes:
 ['522030', '528045']]
 neighborhood: 6
 **************************************/
-function getStudentsFromData(data) {
+function getStudentsAndMoreauClassesFromData(data) {
   let idsToStudents = new Map();
-  let allStudents = [];
   data.forEach(item => {
     let id = item["Student"];
     let beginTime = item["Begin Time AM/PM"];
@@ -65,7 +68,7 @@ function getStudentsFromData(data) {
     } else {
       currStudent = new Student(id, [], "", false);
       idsToStudents.set(id, currStudent);
-      allStudents.push(currStudent);
+      STUDENTS.push(currStudent);
     }
 
     // Looking for "Moreau Neighborhood" class
@@ -73,6 +76,8 @@ function getStudentsFromData(data) {
     if (className.includes("Moreau")) {
       if (className.includes("Moreau Neighborhood")) {
         currStudent.neighborhood = parseInt(className.slice(-1));
+      } else {
+        MOREAU_CLASSES.push([timeToMinutes(beginTime, classDays.charAt(0)), timeToMinutes(endTime, classDays.charAt(0))]);
       }
     } else {
       // adding a separate class for each day
@@ -83,13 +88,16 @@ function getStudentsFromData(data) {
       }
     }
   })
-  return allStudents;
 }
 
 // Converts a time string (i.e 11:00 AM) and a day (i.e. M)
 // to the corresponding minute of of the week (Monday morning is minute 0)
+let first = true;
 function timeToMinutes(timeString, day) {
   let minutes = 0;
+  if (first) {
+    console.log(day);
+  }
   if (day == "T") minutes += (1 * 24 * 60);
   if (day == "W") minutes += (2 * 24 * 60);
   if (day == "R") minutes += (3 * 24 * 60);
@@ -97,34 +105,47 @@ function timeToMinutes(timeString, day) {
 
   if (timeString.split(" ")[1] == "PM") minutes += (12 * 60);
 
+  if (first) {
+    console.log(minutes);
+  }
+
   let hourAndSecs = timeString.split(" ")[0].split(":");
+  if (first) {
+    console.log("----------");
+    console.log(hourAndSecs[0]);
+    console.log(hourAndSecs[1]);
+  }
   minutes += (hourAndSecs[0] * 60);
-  minutes += hourAndSecs[1];
+  minutes += parseInt(hourAndSecs[1]);
+  if (first) {
+    console.log(minutes);
+  }
+  first = false;
   return minutes;
 }
 
 // get student by id
-function getStudentById(students,id) {
-  return students[id-1];
+function getStudentById(students, id) {
+  return students[id - 1];
 }
 
 // returns total time spent in class by a particular student each week
-function getTotalClassTime(students,id) {
+function getTotalClassTime(students, id) {
   let totalMin = 0;
-  getClassesById(students,id).map(function(curClass){
-    totalMin += (curClass[1]-curClass[0])
+  getClassesById(students, id).map(function (curClass) {
+    totalMin += (curClass[1] - curClass[0])
   });
   return totalMin;
 }
 
 // get neighborhood by student id
-function getNeighborhoodById(students,id) {
-  return getStudentById(students,id).neighborhood;
+function getNeighborhoodById(students, id) {
+  return getStudentById(students, id).neighborhood;
 }
 
 // get classes by student id
-function getClassesById(students,id) {
-  return getStudentById(students,id).classes;
+function getClassesById(students, id) {
+  return getStudentById(students, id).classes;
 }
 
 inputForm.addEventListener("submit", function (e) {
@@ -136,11 +157,11 @@ inputForm.addEventListener("submit", function (e) {
     const text = e.target.result;
     const data = csvToArray(text, ",");
     // Read raw JSON into student classes
-    let students = getStudentsFromData(data);
-  //  let test = getTotalClassTime(students,1);
+    getStudentsAndMoreauClassesFromData(data);
+    //  let test = getTotalClassTime(students,1);
     // print to screen to check if array was created correctly
-    document.write(JSON.stringify(students[0]));
-  //  document.write(test);
+    document.write(JSON.stringify(STUDENTS[0]));
+    //  document.write(test);
     // document.write(JSON.stringify(data, null, 4));
   };
   reader.readAsText(input);
