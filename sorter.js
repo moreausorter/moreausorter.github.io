@@ -131,6 +131,21 @@ function getClassesById(students, id) {
   return getStudentById(students, id).classes;
 }
 
+// checks if a given time slot is available for a given student
+function checkIfAvailable(student, time){
+  for (let i = 0; i < student.classes.length; i++) {
+    start = time[0] - 10;
+    end = time[1] + 10;
+    if (student.classes[i][0] <= start && start <= student.classes[i][1]){
+      return false;
+    }else if (student.classes[i][0] <= end && end <= student.classes[i][1]){
+      return false;
+    }
+  }
+  return true;
+
+}
+
 inputForm.addEventListener("submit", function (e) {
   e.preventDefault();
   const input = csvFile.files[0];
