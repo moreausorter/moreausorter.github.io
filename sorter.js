@@ -11,6 +11,8 @@ class Student {
 }
 
 // GLOBAL VARIABLES
+// See method description for getStudentsAndMoreauClassesFromData
+// to see how these are formatted
 let STUDENTS = [];
 let MOREAU_CLASSES = [];
 
@@ -51,6 +53,10 @@ classes:
 ['234030', '240045'],
 ['522030', '528045']]
 neighborhood: 6
+
+Also creates a list of avaliable Moreau classes in
+the following form.
+[starttime in minutes, endtime in minutes]
 **************************************/
 function getStudentsAndMoreauClassesFromData(data) {
   let idsToStudents = new Map();
@@ -99,7 +105,12 @@ function timeToMinutes(timeString, day) {
   if (day == "R") minutes += (3 * 24 * 60);
   if (day == "F") minutes += (4 * 24 * 60);
 
-  if (timeString.split(" ")[1] == "PM") minutes += (12 * 60);
+  if (timeString.split(" ")[1] == "PM") {
+    minutes += (12 * 60);
+
+    // Substracting 12 hours if its a pm time starting with 12:xx to prevent double counting
+    if (timeString.split(" ")[0].split(":")[0] == "12") minutes -= 12 * 60;
+  }
 
   let hourAndSecs = timeString.split(" ")[0].split(":");
   minutes += (hourAndSecs[0] * 60);
@@ -131,19 +142,67 @@ function getClassesById(students, id) {
   return getStudentById(students, id).classes;
 }
 
+// Course should be in the form [starttime, endtime]
+function isAvaliableForClass(student, course) {
+  for (let i = course[0]; i <= course[1]; i = i + 5) {
+    if (!isAvailable(student, i)) return false;
+  }
+  return true;
+}
+
 // checks if a given time slot is available for a given student
-function checkIfAvailable(student, time){
+function isAvailable(student, time) {
   for (let i = 0; i < student.classes.length; i++) {
     start = time[0] - 10;
     end = time[1] + 10;
-    if (student.classes[i][0] <= start && start <= student.classes[i][1]){
+    if (student.classes[i][0] <= start && start <= student.classes[i][1]) {
       return false;
-    }else if (student.classes[i][0] <= end && end <= student.classes[i][1]){
+    } else if (student.classes[i][0] <= end && end <= student.classes[i][1]) {
       return false;
     }
   }
   return true;
 
+}
+
+function scheduleStudents() {
+  // Tracking students able and unable to be scheduled for a Moreau class
+  let scheduledStudents = [];
+  let notScheduledStudents = [];
+
+  let maxMoreauCapacity = 18; // Based of PATH class search for Spring 2023
+  let moreauSeatsFilled = new Array(MOREAU_CLASSES.length).fill(0); // Array where each index is the number of students scheduled for that Moreau class.
+
+  STUDENTS.forEach(student => {
+    student.assigned = false;
+
+    // Checking each possible Moreau class to see if the student can be scheduled
+    for (let i = 0; i < MOREAU_CLASSES.length; i++) {
+      if (moreauSeatsFilled[i] >= maxMoreauCapacity) continue;
+      let currMoreau = MOREAU_CLASSES[i];
+      // Checking if the student is avaliable for the start and end time of the Moreau class
+      if (isAvaliableForClass(student, currMoreau)) {
+        moreauSeatsFilled[i]++;
+        student.assigned = true;
+        // Adding the current Moreau class to the student schedule
+        student.classes.push([currMoreau[0], currMoreau[1]]);
+
+        // updating our scheduled students before breaking out of for loop
+        scheduledStudents.push(student);
+        break;
+      }
+    }
+
+    if (student.assigned == false) {
+      notScheduledStudents.push(student);
+    }
+  })
+  document.write("Number of not scheduled Students: ");
+  document.write(notScheduledStudents.length);
+  document.write("\nNumber of scheduled Students: ");
+  document.write(scheduledStudents.length);
+  document.write(JSON.stringify(scheduledStudents[0]));
+  document.write(JSON.stringify(scheduledStudents[1]));
 }
 
 inputForm.addEventListener("submit", function (e) {
@@ -156,9 +215,10 @@ inputForm.addEventListener("submit", function (e) {
     const data = csvToArray(text, ",");
     // Read raw JSON into student classes
     getStudentsAndMoreauClassesFromData(data);
+    scheduleStudents();
     //  let test = getTotalClassTime(students,1);
     // print to screen to check if array was created correctly
-    document.write(JSON.stringify(STUDENTS[0]));
+    // document.write(JSON.stringify(STUDENTS[0]));
     //  document.write(test);
     // document.write(JSON.stringify(data, null, 4));
   };
