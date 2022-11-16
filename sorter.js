@@ -7,6 +7,7 @@ class Student {
     this.classes = classes;
     this.neighborhood = neighborhood;
     this.assigned = assigned;
+    this.moreau = null;
   }
 }
 
@@ -165,6 +166,40 @@ function isAvailable(student, time) {
 
 }
 
+function createTable(){
+  const body = document.body;
+  const tbl = document.createElement('table');
+  
+  const header = tbl.insertRow();
+  const student = header.insertCell();
+  student.appendChild(document.createTextNode("STUDENT"));
+  student.style.border = '1px solid black'
+  const moreau = header.insertCell();
+  moreau.appendChild(document.createTextNode("MOREAU"))
+  moreau.style.border = '1px solid black'
+  const classhead = header.insertCell();
+  classhead.appendChild(document.createTextNode("CLASSES"));
+  classhead.style.border = '1px solid black'
+
+  for (let i = 0; i < STUDENTS.length; i++) {
+    const row = tbl.insertRow();
+    const studentCell = row.insertCell();
+    studentCell.appendChild(document.createTextNode(STUDENTS[i].id));
+    studentCell.style.border = '1px solid black'
+    const moreauCell = row.insertCell();
+    moreauCell.appendChild(document.createTextNode(STUDENTS[i].moreau));
+    moreauCell.style.border = '1px solid black'
+    const classes = row.insertCell();
+    classes.appendChild(document.createTextNode(STUDENTS[i].classes));
+    classes.style.border = '1px solid black'
+
+
+    ;
+  }
+  body.appendChild(tbl)
+}
+
+
 function scheduleStudents() {
   // Tracking students able and unable to be scheduled for a Moreau class
   let scheduledStudents = [];
@@ -186,7 +221,7 @@ function scheduleStudents() {
         student.assigned = true;
         // Adding the current Moreau class to the student schedule
         student.classes.push([currMoreau[0], currMoreau[1]]);
-
+        student.moreau = currMoreau;
         // updating our scheduled students before breaking out of for loop
         scheduledStudents.push(student);
         break;
@@ -216,6 +251,8 @@ inputForm.addEventListener("submit", function (e) {
     // Read raw JSON into student classes
     getStudentsAndMoreauClassesFromData(data);
     scheduleStudents();
+    console.log(STUDENTS);
+    createTable();
     //  let test = getTotalClassTime(students,1);
     // print to screen to check if array was created correctly
     // document.write(JSON.stringify(STUDENTS[0]));
