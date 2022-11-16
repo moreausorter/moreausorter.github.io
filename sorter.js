@@ -174,6 +174,10 @@ function createTable(){
   const student = header.insertCell();
   student.appendChild(document.createTextNode("STUDENT"));
   student.style.border = '1px solid black'
+  const neighborhood = header.insertCell();
+  neighborhood.appendChild(document.createTextNode("NEIGHBORHOOD"));
+  neighborhood.style.border = '1px solid black'
+
   const moreau = header.insertCell();
   moreau.appendChild(document.createTextNode("MOREAU"))
   moreau.style.border = '1px solid black'
@@ -186,6 +190,9 @@ function createTable(){
     const studentCell = row.insertCell();
     studentCell.appendChild(document.createTextNode(STUDENTS[i].id));
     studentCell.style.border = '1px solid black'
+    const neighborhoodCell = row.insertCell();
+    neighborhoodCell.appendChild(document.createTextNode(STUDENTS[i].neighborhood));
+    neighborhoodCell.style.border = '1px solid black'
     const moreauCell = row.insertCell();
     moreauCell.appendChild(document.createTextNode(STUDENTS[i].moreau));
     moreauCell.style.border = '1px solid black'
