@@ -8,6 +8,15 @@ class Student {
     this.neighborhood = neighborhood;
     this.assigned = assigned;
     this.moreau = null;
+    this.inNeighborhood = false;
+  }
+}
+
+class MoreauClass {
+  constructor(neighborhood,crn,time){
+    this.neighborhood = neighborhood;
+    this.crn = crn;
+    this.time = [];
   }
 }
 
@@ -63,6 +72,7 @@ function getStudentsAndMoreauClassesFromData(data) {
   let idsToStudents = new Map();
   data.forEach(item => {
     let id = item["Student"];
+    let crn = item["CRN"];
     let beginTime = item["Begin Time AM/PM"];
     let endTime = item["End Time AM/PM"];
     let className = item["Course Title Short"];
@@ -84,7 +94,11 @@ function getStudentsAndMoreauClassesFromData(data) {
       if (className.includes("Moreau Neighborhood")) {
         currStudent.neighborhood = parseInt(className.slice(-1));
       } else {
-        MOREAU_CLASSES.push([timeToMinutes(beginTime, classDays.charAt(0)), timeToMinutes(endTime, classDays.charAt(0))]);
+        currClass = new MoreauClass(0,0,[]);
+        currClass.neighborhood = currStudent.neighborhood;
+        currClass.crn = crn;
+        currClass.time = [timeToMinutes(beginTime, classDays.charAt(0)), timeToMinutes(endTime, classDays.charAt(0))];
+        MOREAU_CLASSES.push(currClass);
       }
     } else {
       // adding a separate class for each day
@@ -169,7 +183,7 @@ function isAvailable(student, time) {
 function createTable(){
   const body = document.body;
   const tbl = document.createElement('table');
-  
+
   const header = tbl.insertRow();
   const student = header.insertCell();
   student.appendChild(document.createTextNode("STUDENT"));
@@ -179,11 +193,19 @@ function createTable(){
   neighborhood.style.border = '1px solid black'
 
   const moreau = header.insertCell();
-  moreau.appendChild(document.createTextNode("MOREAU"))
+  moreau.appendChild(document.createTextNode("MOREAU CRN"))
   moreau.style.border = '1px solid black'
-  const classhead = header.insertCell();
-  classhead.appendChild(document.createTextNode("CLASSES"));
-  classhead.style.border = '1px solid black'
+
+  const inNeighborhood = header.insertCell();
+  inNeighborhood.appendChild(document.createTextNode("IN NEIGHBORHOOD?"))
+  inNeighborhood.style.border = '1px solid black'
+//  const moreauNeighborhood = header.insertCell();
+//  moreauNeighborhood.appendChild(document.createTextNode("MOREAU NEIGHBORHOOD"))
+//  moreauNeighborhood.style.border = '1px solid black'
+
+//  const classhead = header.insertCell();
+//  classhead.appendChild(document.createTextNode("CLASSES"));
+//  classhead.style.border = '1px solid black'
 
   for (let i = 0; i < STUDENTS.length; i++) {
     const row = tbl.insertRow();
@@ -194,11 +216,17 @@ function createTable(){
     neighborhoodCell.appendChild(document.createTextNode(STUDENTS[i].neighborhood));
     neighborhoodCell.style.border = '1px solid black'
     const moreauCell = row.insertCell();
-    moreauCell.appendChild(document.createTextNode(STUDENTS[i].moreau));
+    moreauCell.appendChild(document.createTextNode(STUDENTS[i].moreau.crn));
     moreauCell.style.border = '1px solid black'
-    const classes = row.insertCell();
-    classes.appendChild(document.createTextNode(STUDENTS[i].classes));
-    classes.style.border = '1px solid black'
+    const inNeighborhoodCell = row.insertCell();
+    inNeighborhoodCell.appendChild(document.createTextNode(STUDENTS[i].inNeighborhood));
+    inNeighborhoodCell.style.border = '1px solid black'
+//    const moreauNeighborhoodCell = row.insertCell();
+//    moreauNeighborhoodCell.appendChild(document.createTextNode(STUDENTS[i].moreau.neighborhood));
+//    moreauNeighborhoodCell.style.border = '1px solid black'
+//    const classes = row.insertCell();
+//    classes.appendChild(document.createTextNode(STUDENTS[i].classes));
+//    classes.style.border = '1px solid black'
 
 
     ;
@@ -219,32 +247,63 @@ function scheduleStudents() {
     student.assigned = false;
 
     // Checking each possible Moreau class to see if the student can be scheduled
+
+    // check first within neighborhood
     for (let i = 0; i < MOREAU_CLASSES.length; i++) {
-      if (moreauSeatsFilled[i] >= maxMoreauCapacity) continue;
       let currMoreau = MOREAU_CLASSES[i];
-      // Checking if the student is avaliable for the start and end time of the Moreau class
-      if (isAvaliableForClass(student, currMoreau)) {
-        moreauSeatsFilled[i]++;
-        student.assigned = true;
-        // Adding the current Moreau class to the student schedule
-        student.classes.push([currMoreau[0], currMoreau[1]]);
-        student.moreau = currMoreau;
-        // updating our scheduled students before breaking out of for loop
-        scheduledStudents.push(student);
-        break;
+      if (student.assigned == false && student.neighborhood == currMoreau.neighborhood){
+        if (moreauSeatsFilled[i] >= maxMoreauCapacity) continue;
+        // Checking if the student is avaliable for the start and end time of the Moreau class
+        if (isAvaliableForClass(student, currMoreau.time)) {
+          moreauSeatsFilled[i]++;
+          student.assigned = true;
+          // Adding the current Moreau class to the student schedule
+          student.classes.push([currMoreau.time[0], currMoreau.time[1]]);
+          student.moreau = currMoreau;
+          student.inNeighborhood = true;
+          // updating our scheduled students before breaking out of for loop
+          scheduledStudents.push(student);
+          break;
+        }
       }
     }
 
     if (student.assigned == false) {
       notScheduledStudents.push(student);
     }
-  })
-  document.write("Number of not scheduled Students: ");
+  });
+
+  // if not assigned in neighborhood, try to put in some class
+  let finalNotScheduledStudents = [];
+  STUDENTS.forEach(student => {
+    // Checking each possible Moreau class to see if the student can be scheduled
+    for (let i = 0; i < MOREAU_CLASSES.length; i++) {
+      let currMoreau = MOREAU_CLASSES[i];
+      if (student.assigned == false && student.neighborhood != currMoreau.neighborhood){
+        if (moreauSeatsFilled[i] >= maxMoreauCapacity) continue;
+        // Checking if the student is avaliable for the start and end time of the Moreau class
+        if (isAvaliableForClass(student, currMoreau.time)) {
+          moreauSeatsFilled[i]++;
+          student.assigned = true;
+          // Adding the current Moreau class to the student schedule
+          student.classes.push([currMoreau.time[0], currMoreau.time[1]]);
+          student.moreau = currMoreau;
+          // updating our scheduled students before breaking out of for loop
+          scheduledStudents.push(student);
+          break;
+        }
+      }
+    }
+
+    if (student.assigned == false) {
+      finalNotScheduledStudents.push(student);
+    }
+  });
+
+  document.write("Number students scheduled outside of neighborhood: ");
   document.write(notScheduledStudents.length);
-  document.write("\nNumber of scheduled Students: ");
-  document.write(scheduledStudents.length);
-  document.write(JSON.stringify(scheduledStudents[0]));
-  document.write(JSON.stringify(scheduledStudents[1]));
+//  document.write(JSON.stringify(scheduledStudents[0]));
+//  document.write(JSON.stringify(scheduledStudents[1]));
 }
 
 inputForm.addEventListener("submit", function (e) {
