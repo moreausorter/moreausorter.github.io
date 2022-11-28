@@ -25,6 +25,7 @@ class MoreauClass {
 // to see how these are formatted
 let STUDENTS = [];
 let MOREAU_CLASSES = [];
+let CRNS = new Set();
 
 function csvToArray(stringVal, delimiter) {
   // use split to create an array from string by delimiter
@@ -94,11 +95,14 @@ function getStudentsAndMoreauClassesFromData(data) {
       if (className.includes("Moreau Neighborhood")) {
         currStudent.neighborhood = parseInt(className.slice(-1));
       } else {
-        currClass = new MoreauClass(0,0,[]);
-        currClass.neighborhood = currStudent.neighborhood;
-        currClass.crn = crn;
-        currClass.time = [timeToMinutes(beginTime, classDays.charAt(0)), timeToMinutes(endTime, classDays.charAt(0))];
-        MOREAU_CLASSES.push(currClass);
+        if (!CRNS.has(crn)){
+          CRNS.add(crn);
+          currClass = new MoreauClass(0,0,[]);
+          currClass.neighborhood = currStudent.neighborhood;
+          currClass.crn = crn;
+          currClass.time = [timeToMinutes(beginTime, classDays.charAt(0)), timeToMinutes(endTime, classDays.charAt(0))];
+          MOREAU_CLASSES.push(currClass);
+          }
       }
     } else {
       // adding a separate class for each day
@@ -251,6 +255,7 @@ function scheduleStudents() {
     // check first within neighborhood
     for (let i = 0; i < MOREAU_CLASSES.length; i++) {
       let currMoreau = MOREAU_CLASSES[i];
+     
       if (student.assigned == false && student.neighborhood == currMoreau.neighborhood){
         if (moreauSeatsFilled[i] >= maxMoreauCapacity) continue;
         // Checking if the student is avaliable for the start and end time of the Moreau class
@@ -317,7 +322,6 @@ inputForm.addEventListener("submit", function (e) {
     // Read raw JSON into student classes
     getStudentsAndMoreauClassesFromData(data);
     scheduleStudents();
-    console.log(STUDENTS);
     STUDENTS.sort((a, b) => (a.moreau.crn > b.moreau.crn) ? 1 : -1)
     createTable();
     //  let test = getTotalClassTime(students,1);
