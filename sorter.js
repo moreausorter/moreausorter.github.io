@@ -318,6 +318,7 @@ inputForm.addEventListener("submit", function (e) {
     getStudentsAndMoreauClassesFromData(data);
     scheduleStudents();
     console.log(STUDENTS);
+    STUDENTS.sort((a, b) => (a.moreau.crn > b.moreau.crn) ? 1 : -1)
     createTable();
     //  let test = getTotalClassTime(students,1);
     // print to screen to check if array was created correctly
