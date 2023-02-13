@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F5F5F5;
+}
+
+header {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+#MoreauInputForm {
+    margin-top: 4rem;
+}
+
+#MoreauCsv {
+    display: block;
+    margin: 0 auto;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.btn-primary {
+    background-color: #337ab7;
+    border-color: #2e6da4;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #286090;
+    border-color: #204d74;
+}
