@@ -368,8 +368,9 @@ function scheduleStudents() {
     }
   });
 
-  document.write("Number students scheduled outside of neighborhood: ");
+  document.write("# of Students Scheduled Outside of Assigned Neighborhood: ");
   document.write(notScheduledStudents.length);
+  document.write("\n");
   //  document.write(JSON.stringify(scheduledStudents[0]));
   //  document.write(JSON.stringify(scheduledStudents[1]));
 }
@@ -420,8 +421,10 @@ inputForm.addEventListener("submit", function (e) {
     const data = csvToArray(text, ",");
     // Read raw JSON into student classes
     getStudentsAndMoreauClassesFromData(data);
+    STUDENTS.sort((a, b) => (a.classes.length > b.classes.length) ? -1 : 1);
+    console.log(STUDENTS);
     scheduleStudents();
-    STUDENTS.sort((a, b) => (a.moreau.crn > b.moreau.crn) ? 1 : -1)
+    // STUDENTS.sort((a, b) => (a.moreau.crn > b.moreau.crn) ? 1 : -1);
     createTable();
 
     //  let test = getTotalClassTime(students,1);
