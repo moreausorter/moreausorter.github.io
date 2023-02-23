@@ -13,7 +13,7 @@ class Student {
 }
 
 class MoreauClass {
-  constructor(neighborhood,crn,time){
+  constructor(neighborhood, crn, time) {
     this.neighborhood = neighborhood;
     this.crn = crn;
     this.time = [];
@@ -95,14 +95,14 @@ function getStudentsAndMoreauClassesFromData(data) {
       if (className.includes("Moreau Neighborhood")) {
         currStudent.neighborhood = parseInt(className.slice(-1));
       } else {
-        if (!CRNS.has(crn)){
+        if (!CRNS.has(crn)) {
           CRNS.add(crn);
-          currClass = new MoreauClass(0,0,[]);
+          currClass = new MoreauClass(0, 0, []);
           currClass.neighborhood = currStudent.neighborhood;
           currClass.crn = crn;
           currClass.time = [timeToMinutes(beginTime, classDays.charAt(0)), timeToMinutes(endTime, classDays.charAt(0))];
           MOREAU_CLASSES.push(currClass);
-          }
+        }
       }
     } else {
       // adding a separate class for each day
@@ -184,7 +184,7 @@ function isAvailable(student, time) {
 
 }
 
-function createTable(){
+function createTable() {
   const body = document.body;
   const tbl = document.createElement('table')
 
@@ -194,7 +194,7 @@ function createTable(){
   button.addEventListener('click', () => {
     createCSV();
   })
-  body.append(button); ;
+  body.append(button);;
 
   const header = tbl.insertRow();
   const student = header.insertCell();
@@ -211,13 +211,13 @@ function createTable(){
   const inNeighborhood = header.insertCell();
   inNeighborhood.appendChild(document.createTextNode("IN NEIGHBORHOOD?"))
   inNeighborhood.style.border = '1px solid black'
-//  const moreauNeighborhood = header.insertCell();
-//  moreauNeighborhood.appendChild(document.createTextNode("MOREAU NEIGHBORHOOD"))
-//  moreauNeighborhood.style.border = '1px solid black'
+  //  const moreauNeighborhood = header.insertCell();
+  //  moreauNeighborhood.appendChild(document.createTextNode("MOREAU NEIGHBORHOOD"))
+  //  moreauNeighborhood.style.border = '1px solid black'
 
-//  const classhead = header.insertCell();
-//  classhead.appendChild(document.createTextNode("CLASSES"));
-//  classhead.style.border = '1px solid black'
+  //  const classhead = header.insertCell();
+  //  classhead.appendChild(document.createTextNode("CLASSES"));
+  //  classhead.style.border = '1px solid black'
 
   for (let i = 0; i < STUDENTS.length; i++) {
     const row = tbl.insertRow();
@@ -233,51 +233,51 @@ function createTable(){
     const inNeighborhoodCell = row.insertCell();
     inNeighborhoodCell.appendChild(document.createTextNode(STUDENTS[i].inNeighborhood));
     inNeighborhoodCell.style.border = '1px solid black'
-//    const moreauNeighborhoodCell = row.insertCell();
-//    moreauNeighborhoodCell.appendChild(document.createTextNode(STUDENTS[i].moreau.neighborhood));
-//    moreauNeighborhoodCell.style.border = '1px solid black'
-//    const classes = row.insertCell();
-//    classes.appendChild(document.createTextNode(STUDENTS[i].classes));
-//    classes.style.border = '1px solid black'
+      //    const moreauNeighborhoodCell = row.insertCell();
+      //    moreauNeighborhoodCell.appendChild(document.createTextNode(STUDENTS[i].moreau.neighborhood));
+      //    moreauNeighborhoodCell.style.border = '1px solid black'
+      //    const classes = row.insertCell();
+      //    classes.appendChild(document.createTextNode(STUDENTS[i].classes));
+      //    classes.style.border = '1px solid black'
 
 
-    ;
+      ;
   }
   body.appendChild(tbl)
 
 }
 
-function createCSV(){
+function createCSV() {
   var csv_data = []
 
   var rows = document.getElementsByTagName('tr');
   for (var i = 0; i < rows.length; i++) {
 
-        // Get each column data
-        var cols = rows[i].querySelectorAll('td,th');
+    // Get each column data
+    var cols = rows[i].querySelectorAll('td,th');
 
-        // Stores each csv row data
-        var csvrow = [];
-        for (var j = 0; j < cols.length; j++) {
+    // Stores each csv row data
+    var csvrow = [];
+    for (var j = 0; j < cols.length; j++) {
 
-            // Get the text data of each cell of
-            // a row and push it to csvrow
-            csvrow.push(cols[j].innerHTML);
-        }
-
-        // Combine each column value with comma
-        csv_data.push(csvrow.join(","));
+      // Get the text data of each cell of
+      // a row and push it to csvrow
+      csvrow.push(cols[j].innerHTML);
     }
-    // combine each row data with new line character
-    csv_data = csv_data.join('\n');
-    download_csv(csv_data);
+
+    // Combine each column value with comma
+    csv_data.push(csvrow.join(","));
+  }
+  // combine each row data with new line character
+  csv_data = csv_data.join('\n');
+  download_csv(csv_data);
 }
 
-function download_csv(csv_data){
+function download_csv(csv_data) {
   // Create CSV file object and feed
   // our csv_data into it
   CSVFile = new Blob([csv_data], {
-      type: "text/csv"
+    type: "text/csv"
   });
 
   // Create to temporary link to initiate
@@ -318,8 +318,8 @@ function scheduleStudents() {
     // check first within neighborhood
     for (let i = 0; i < MOREAU_CLASSES.length; i++) {
       let currMoreau = MOREAU_CLASSES[i];
-     
-      if (student.assigned == false && student.neighborhood == currMoreau.neighborhood){
+
+      if (student.assigned == false && student.neighborhood == currMoreau.neighborhood) {
         if (moreauSeatsFilled[i] >= maxMoreauCapacity) continue;
         // Checking if the student is avaliable for the start and end time of the Moreau class
         if (isAvaliableForClass(student, currMoreau.time)) {
@@ -347,7 +347,7 @@ function scheduleStudents() {
     // Checking each possible Moreau class to see if the student can be scheduled
     for (let i = 0; i < MOREAU_CLASSES.length; i++) {
       let currMoreau = MOREAU_CLASSES[i];
-      if (student.assigned == false && student.neighborhood != currMoreau.neighborhood){
+      if (student.assigned == false && student.neighborhood != currMoreau.neighborhood) {
         if (moreauSeatsFilled[i] >= maxMoreauCapacity) continue;
         // Checking if the student is avaliable for the start and end time of the Moreau class
         if (isAvaliableForClass(student, currMoreau.time)) {
@@ -370,8 +370,44 @@ function scheduleStudents() {
 
   document.write("Number students scheduled outside of neighborhood: ");
   document.write(notScheduledStudents.length);
-//  document.write(JSON.stringify(scheduledStudents[0]));
-//  document.write(JSON.stringify(scheduledStudents[1]));
+  //  document.write(JSON.stringify(scheduledStudents[0]));
+  //  document.write(JSON.stringify(scheduledStudents[1]));
+}
+
+function findLeastBusyClassTimes() {
+  let classList = [];
+  STUDENTS.forEach(student => {
+    classList = classList.concat(student.classes);
+  });
+
+  let timeSlots = [];
+  for (let i = 0; i < 7200; i += 30) {
+    timeSlots.push([i, i + 30]);
+  }
+
+  let count = new Array(timeSlots.length).fill(0);
+
+  for (let i = 0; i < timeSlots.length; i++) {
+    for (let j = 0; j < classList.length; j++) {
+      if (timeSlots[i][0] >= classList[j][1] || timeSlots[i][1] <= classList[j][0]) {
+        // no overlap
+      } else {
+        count[i]++;
+      }
+    }
+  }
+
+  let leastBusyTimes = [];
+
+  let minCount = Math.min(...count);
+
+  for (let i = 0; i < count.length; i++) {
+    if (count[i] === minCount) {
+      leastBusyTimes.push(timeSlots[i]);
+    }
+  }
+
+  console.log(leastBusyTimes);
 }
 
 inputForm.addEventListener("submit", function (e) {
@@ -387,7 +423,7 @@ inputForm.addEventListener("submit", function (e) {
     scheduleStudents();
     STUDENTS.sort((a, b) => (a.moreau.crn > b.moreau.crn) ? 1 : -1)
     createTable();
-    
+
     //  let test = getTotalClassTime(students,1);
     // print to screen to check if array was created correctly
     // document.write(JSON.stringify(STUDENTS[0]));
