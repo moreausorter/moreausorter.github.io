@@ -188,14 +188,6 @@ function createTable() {
   const body = document.body;
   const tbl = document.createElement('table')
 
-  // adding download button
-  const button = document.createElement('button');
-  button.innerText = 'Download .csv';
-  button.addEventListener('click', () => {
-    createCSV();
-  })
-  body.append(button);;
-
   const header = tbl.insertRow();
   const student = header.insertCell();
   student.appendChild(document.createTextNode("STUDENT"));
@@ -376,6 +368,7 @@ function scheduleStudents() {
 }
 
 function findLeastBusyClassTimes() {
+  var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   let classList = [];
   STUDENTS.forEach(student => {
     classList = classList.concat(student.classes);
@@ -400,15 +393,71 @@ function findLeastBusyClassTimes() {
 
   let leastBusyTimes = [];
 
-  let minCount = Math.min(...count);
+  let sortedCounts = count.slice().sort((a, b) => a - b);
+
+  let minCounts = sortedCounts.slice(0, 20);
 
   for (let i = 0; i < count.length; i++) {
-    if (count[i] === minCount) {
-      leastBusyTimes.push(timeSlots[i]);
+    if (minCounts.includes(count[i])) {
+      let startTime = timeSlots[i][0];
+      let endTime = timeSlots[i][1];
+      let dayOfWeek = daysOfWeek[Math.floor(startTime / 1440)];
+      let startHour = Math.floor((startTime % 1440) / 60);
+      let startMinute = startTime % 60;
+      let endHour = Math.floor((endTime % 1440) / 60);
+      let endMinute = endTime % 60;
+      let startTimeString, endTimeString;
+      if (startHour >= 8 && startHour < 12) {
+        startTimeString = startHour + ':' + (startMinute < 10 ? '0' + startMinute : startMinute) + 'am';
+      } else if (startHour === 12) {
+        startTimeString = '12:' + (startMinute < 10 ? '0' + startMinute : startMinute) + 'pm';
+      } else {
+        startTimeString = (startHour - 12) + ':' + (startMinute < 10 ? '0' + startMinute : startMinute) + 'pm';
+      }
+      if (endHour >= 8 && endHour < 12) {
+        endTimeString = endHour + ':' + (endMinute < 10 ? '0' + endMinute : endMinute) + 'am';
+      } else if (endHour === 12) {
+        endTimeString = '12:' + (endMinute < 10 ? '0' + endMinute : endMinute) + 'pm';
+      } else {
+        endTimeString = (endHour - 12) + ':' + (endMinute < 10 ? '0' + endMinute : startMinute) + 'pm';
+      }
+      let classTimeString = `${dayOfWeek} ${startTimeString}-${endTimeString} (${count[i]} students)`;
+      leastBusyTimes.push(classTimeString);
     }
   }
 
   console.log(leastBusyTimes);
+  return leastBusyTimes;
+}
+
+function createCSVButton() {
+  const body = document.body;
+
+  // adding download button
+  const button = document.createElement('button');
+  button.id = 'download-btn';
+  button.innerText = 'Download .csv';
+  button.addEventListener('click', () => {
+    createCSV();
+  })
+  body.append(button);
+}
+
+function createClassRecommendationTable() {
+  const leastBusyClassesArray = findLeastBusyClassTimes();
+  const leastBusyClasses = document.createElement('div');
+  const topElement = document.createElement('p');
+  topElement.textContent = " Recommended class times to add a Moreau Section";
+  leastBusyClasses.appendChild(topElement);
+  for (let i = 0; i < Math.min(10, leastBusyClassesArray.length); i++) {
+    const classElement = document.createElement('p');
+    classElement.textContent = leastBusyClassesArray[i];
+    leastBusyClasses.appendChild(classElement);
+  }
+
+  const body = document.body;
+  const firstChild = body.firstChild;
+  body.insertBefore(leastBusyClasses, firstChild);
 }
 
 inputForm.addEventListener("submit", function (e) {
@@ -424,7 +473,9 @@ inputForm.addEventListener("submit", function (e) {
     STUDENTS.sort((a, b) => (a.classes.length > b.classes.length) ? -1 : 1);
     console.log(STUDENTS);
     scheduleStudents();
-    // STUDENTS.sort((a, b) => (a.moreau.crn > b.moreau.crn) ? 1 : -1);
+
+    createClassRecommendationTable();
+    createCSVButton();
     createTable();
 
     //  let test = getTotalClassTime(students,1);
