@@ -183,7 +183,8 @@ function isAvailable(student, time) {
   return true;
 
 }
-
+// create output table showing initial results of the sorting algorithm
+// Directly outputs on page
 function createTable() {
   const body = document.body;
   const tbl = document.createElement('table')
@@ -203,14 +204,8 @@ function createTable() {
   const inNeighborhood = header.insertCell();
   inNeighborhood.appendChild(document.createTextNode("IN NEIGHBORHOOD?"))
   inNeighborhood.style.border = '1px solid black'
-  //  const moreauNeighborhood = header.insertCell();
-  //  moreauNeighborhood.appendChild(document.createTextNode("MOREAU NEIGHBORHOOD"))
-  //  moreauNeighborhood.style.border = '1px solid black'
 
-  //  const classhead = header.insertCell();
-  //  classhead.appendChild(document.createTextNode("CLASSES"));
-  //  classhead.style.border = '1px solid black'
-
+  // things to print for each student
   for (let i = 0; i < STUDENTS.length; i++) {
     const row = tbl.insertRow();
     const studentCell = row.insertCell();
@@ -224,21 +219,12 @@ function createTable() {
     moreauCell.style.border = '1px solid black'
     const inNeighborhoodCell = row.insertCell();
     inNeighborhoodCell.appendChild(document.createTextNode(STUDENTS[i].inNeighborhood));
-    inNeighborhoodCell.style.border = '1px solid black'
-      //    const moreauNeighborhoodCell = row.insertCell();
-      //    moreauNeighborhoodCell.appendChild(document.createTextNode(STUDENTS[i].moreau.neighborhood));
-      //    moreauNeighborhoodCell.style.border = '1px solid black'
-      //    const classes = row.insertCell();
-      //    classes.appendChild(document.createTextNode(STUDENTS[i].classes));
-      //    classes.style.border = '1px solid black'
-
-
-      ;
+    inNeighborhoodCell.style.border = '1px solid black';
   }
   body.appendChild(tbl)
 
 }
-
+// function to create output csv of table for sorter algorithm
 function createCSV() {
   var csv_data = []
 
@@ -354,7 +340,7 @@ function scheduleStudents() {
         }
       }
     }
-
+    // check if a student makes it out unassigned
     if (student.assigned == false) {
       finalNotScheduledStudents.push(student);
     }
@@ -363,10 +349,9 @@ function scheduleStudents() {
   document.write("# of Students Scheduled Outside of Assigned Neighborhood: ");
   document.write(notScheduledStudents.length);
   document.write("\n");
-  //  document.write(JSON.stringify(scheduledStudents[0]));
-  //  document.write(JSON.stringify(scheduledStudents[1]));
 }
 
+// function to find "floating" classes
 function findLeastBusyClassTimes() {
   var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   let classList = [];
@@ -429,7 +414,7 @@ function findLeastBusyClassTimes() {
   console.log(leastBusyTimes);
   return leastBusyTimes;
 }
-
+// functiont o create button on page above output table
 function createCSVButton() {
   const body = document.body;
 
@@ -443,6 +428,7 @@ function createCSVButton() {
   body.append(button);
 }
 
+// table to print out recommendation table from "floating" algorithm
 function createClassRecommendationTable() {
   const leastBusyClassesArray = findLeastBusyClassTimes();
   const leastBusyClasses = document.createElement('div');
@@ -477,12 +463,6 @@ inputForm.addEventListener("submit", function (e) {
     createClassRecommendationTable();
     createCSVButton();
     createTable();
-
-    //  let test = getTotalClassTime(students,1);
-    // print to screen to check if array was created correctly
-    // document.write(JSON.stringify(STUDENTS[0]));
-    //  document.write(test);
-    // document.write(JSON.stringify(data, null, 4));
   };
   reader.readAsText(input);
 });
