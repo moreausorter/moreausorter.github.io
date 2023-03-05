@@ -361,14 +361,18 @@ function findLeastBusyClassTimes() {
 
   let timeSlots = [];
   for (let i = 0; i < 7200; i += 30) {
-    timeSlots.push([i, i + 30]);
+    timeSlots.push([i, i + 60]);
   }
 
   let count = new Array(timeSlots.length).fill(0);
 
   for (let i = 0; i < timeSlots.length; i++) {
     for (let j = 0; j < classList.length; j++) {
-      if (timeSlots[i][0] >= classList[j][1] || timeSlots[i][1] <= classList[j][0]) {
+      let startTimeInDay = timeSlots[i][0] % 1440;
+      if (startTimeInDay < 480 || startTimeInDay > 1020) {
+        count[i] = 10000;
+      }
+      else if (timeSlots[i][0] >= classList[j][1] || timeSlots[i][1] <= classList[j][0]) {
         // no overlap
       } else {
         count[i]++;
@@ -377,10 +381,8 @@ function findLeastBusyClassTimes() {
   }
 
   let leastBusyTimes = [];
-
   let sortedCounts = count.slice().sort((a, b) => a - b);
-
-  let minCounts = sortedCounts.slice(0, 20);
+  let minCounts = sortedCounts.slice(0, 10);
 
   for (let i = 0; i < count.length; i++) {
     if (minCounts.includes(count[i])) {
@@ -411,9 +413,15 @@ function findLeastBusyClassTimes() {
     }
   }
 
-  console.log(leastBusyTimes);
+  leastBusyTimes.sort((a, b) => {
+    const countA = a.match(/\((\d+)\s+students\)/)[1];
+    const countB = b.match(/\((\d+)\s+students\)/)[1];
+    return countA - countB;
+  });
+
   return leastBusyTimes;
 }
+
 // functiont o create button on page above output table
 function createCSVButton() {
   const body = document.body;
@@ -457,7 +465,6 @@ inputForm.addEventListener("submit", function (e) {
     // Read raw JSON into student classes
     getStudentsAndMoreauClassesFromData(data);
     STUDENTS.sort((a, b) => (a.classes.length > b.classes.length) ? -1 : 1);
-    console.log(STUDENTS);
     scheduleStudents();
 
     createClassRecommendationTable();
