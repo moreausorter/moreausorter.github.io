@@ -1,4 +1,4 @@
-const { findLeastBusyClassTimes } = require('./classRecommender');
+const { findLeastBusyClassTimes } = require('./helperFunctions');
 
 describe('findLeastBusyClassTimes', () => {
     test('returns the least busy class times', () => {
