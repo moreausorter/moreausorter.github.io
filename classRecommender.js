@@ -68,3 +68,5 @@ function findLeastBusyClassTimes(STUDENTS) {
 
     return leastBusyTimes;
 }
+
+module.exports = { findLeastBusyClassTimes };

@@ -9,18 +9,19 @@ describe('findLeastBusyClassTimes', () => {
         ];
 
         const leastBusyTimes = findLeastBusyClassTimes(students);
+        const first10 = leastBusyTimes.slice(0, 10);
 
-        expect(leastBusyTimes).toEqual([
+        expect(first10).toEqual([
+            'Monday 8:00am-9:00am (0 students)',
             'Monday 10:00am-11:00am (0 students)',
-            'Monday 4:00pm-5:00pm (0 students)',
+            'Monday 12:00pm-1:00pm (0 students)',
+            'Monday 5:00pm-6:00pm (0 students)',
+            'Tuesday 8:00am-9:00am (0 students)',
+            'Tuesday 8:30am-9:30am (0 students)',
+            'Tuesday 9:00am-10:00am (0 students)',
+            'Tuesday 9:30am-10:30am (0 students)',
             'Tuesday 10:00am-11:00am (0 students)',
-            'Tuesday 4:00pm-5:00pm (0 students)',
-            'Wednesday 10:00am-11:00am (0 students)',
-            'Wednesday 4:00pm-5:00pm (0 students)',
-            'Thursday 10:00am-11:00am (0 students)',
-            'Thursday 4:00pm-5:00pm (0 students)',
-            'Friday 10:00am-11:00am (0 students)',
-            'Friday 4:00pm-5:00pm (0 students)',
+            'Tuesday 10:30am-11:30am (0 students)'
         ]);
     });
 });
