@@ -1,5 +1,12 @@
 const inputForm = document.getElementById("MoreauInputForm");
 const csvFile = document.getElementById("MoreauCsv");
+const startTimeForRecommender = document.getElementById("starttime");
+const endTimeForRecommender = document.getElementById("endtime");
+const mondayForRecommender = document.getElementById("mondayCheckbox");
+const tuesdayForRecommender = document.getElementById("tuesdayCheckbox");
+const wednesdayForRecommender = document.getElementById("wednesdayCheckbox");
+const thursdayForRecommender = document.getElementById("thursdayCheckbox");
+const fridayForRecommender = document.getElementById("fridayCheckbox");
 
 class Student {
   constructor(id, classes, neighborhood, assigned) {
@@ -135,6 +142,25 @@ function timeToMinutes(timeString, day) {
   minutes += (hourAndSecs[0] * 60);
   minutes += parseInt(hourAndSecs[1]);
   return minutes;
+}
+
+// Converts a time string from military time (i.e 08:00 or 17:00) 
+// normal time string (i.e 11:00 AM) 
+function convertFromMilitaryTime(militaryTime) {
+  // Split the time string into hours and minutes
+  var timeArray = militaryTime.split(":");
+  var hours = parseInt(timeArray[0]);
+  var minutes = parseInt(timeArray[1]);
+
+  // Determine whether it's AM or PM
+  var ampm = hours >= 12 ? 'PM' : 'AM';
+
+  // Convert to 12-hour clock format
+  hours = hours % 12;
+  hours = hours ? hours : 12; // If hours is 0, set it to 12
+  var convertedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
+
+  return convertedTime;
 }
 
 // get student by id
@@ -365,9 +391,37 @@ function createCSVButton() {
   body.append(button);
 }
 
+function getDaysChecked() {
+  let daysChecked = new Set();
+  if (mondayForRecommender.checked) {
+    daysChecked.add("Monday");
+  }
+
+  if (tuesdayForRecommender.checked) {
+    daysChecked.add("Tuesday");
+  }
+
+  if (wednesdayForRecommender.checked) {
+    daysChecked.add("Wednesday");
+  }
+
+  if (thursdayForRecommender.checked) {
+    daysChecked.add("Thursday");
+  }
+
+  if (fridayForRecommender.checked) {
+    daysChecked.add("Friday");
+  }
+
+  return daysChecked;
+}
+
 // table to print out recommendation table from "floating" algorithm
 function createClassRecommendationTable() {
-  const leastBusyClassesArray = window.findLeastBusyClassTimes(STUDENTS);
+  const daysChecked = getDaysChecked();
+  const starttime = convertFromMilitaryTime(startTimeForRecommender.value);
+  const endtime = convertFromMilitaryTime(endTimeForRecommender.value);
+  const leastBusyClassesArray = window.findLeastBusyClassTimes(STUDENTS, timeToMinutes(starttime), timeToMinutes(endtime), daysChecked);
   const leastBusyClasses = document.createElement('div');
   const topElement = document.createElement('p');
   topElement.textContent = " Recommended class times to add a Moreau Section";

@@ -8,7 +8,7 @@ describe('findLeastBusyClassTimes', () => {
             { id: 3, classes: [[540, 600], [780, 840], [960, 1020]] },
         ];
 
-        const leastBusyTimes = findLeastBusyClassTimes(students);
+        const leastBusyTimes = findLeastBusyClassTimes(students, 480, 1020, new Set(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']));
         const first10 = leastBusyTimes.slice(0, 10);
 
         expect(first10).toEqual([
