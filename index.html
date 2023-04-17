@@ -54,6 +54,43 @@
     <form id="MoreauInputForm" class="text-center border border-light p-5">
       <p class="h4 mb-4">Upload your CSV file</p>
       <input type="file" id="MoreauCsv" accept=".csv" required>
+      <br />
+
+      <div class="form-group">
+        <label class="h4 mb-4" for="timerange">Choose a time range to look for Moreau class time slots that are most
+          available</label>
+        <br />
+        <input type="time" id="starttime" name="timerange" min="08:00" max="18:00" value="08:00" required>
+        <small>Start Time</small>
+        <input type="time" id="endtime" name="timerange" min="08:00" max="18:00" value="17:00" required>
+        <small>End Time</small>
+      </div>
+
+      <div class="form-group">
+        <label for="daysOfWeek">Select Days of the Week:</label>
+        <br />
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="mondayCheckbox" value="M">
+          <label class="form-check-label" for="mondayCheckbox">Monday</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="tuesdayCheckbox" value="T">
+          <label class="form-check-label" for="tuesdayCheckbox">Tuesday</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="wednesdayCheckbox" value="W">
+          <label class="form-check-label" for="wednesdayCheckbox">Wednesday</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="thursdayCheckbox" value="Th">
+          <label class="form-check-label" for="thursdayCheckbox">Thursday</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="fridayCheckbox" value="F">
+          <label class="form-check-label" for="fridayCheckbox">Friday</label>
+        </div>
+      </div>
+
       <button class="btn btn-info btn-block my-4" type="submit">Submit</button>
     </form>
     <div id="MoreauSchedulingTable">

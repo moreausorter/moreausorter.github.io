@@ -1,5 +1,5 @@
 // function to find "floating" classes
-function findLeastBusyClassTimes(STUDENTS) {
+function findLeastBusyClassTimes(STUDENTS, starttime, endtime, daysChecked) {
     var daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     let classList = [];
     STUDENTS.forEach(student => {
@@ -16,7 +16,7 @@ function findLeastBusyClassTimes(STUDENTS) {
     for (let i = 0; i < timeSlots.length; i++) {
         for (let j = 0; j < classList.length; j++) {
             let startTimeInDay = timeSlots[i][0] % 1440;
-            if (startTimeInDay < 480 || startTimeInDay > 1020) {
+            if (startTimeInDay < 480 || startTimeInDay > 1020 || startTimeInDay < starttime || startTimeInDay > endtime) {
                 count[i] = 10000;
             }
             else if (timeSlots[i][0] >= classList[j][1] || timeSlots[i][1] <= classList[j][0]) {
@@ -29,13 +29,16 @@ function findLeastBusyClassTimes(STUDENTS) {
 
     let leastBusyTimes = [];
     let sortedCounts = count.slice().sort((a, b) => a - b);
-    let minCounts = sortedCounts.slice(0, 10);
+    let minCounts = sortedCounts;
 
+    // Converting minute time strings back to normal time (i.e. 11:00 AM)
     for (let i = 0; i < count.length; i++) {
         if (minCounts.includes(count[i])) {
             let startTime = timeSlots[i][0];
             let endTime = timeSlots[i][1];
             let dayOfWeek = daysOfWeek[Math.floor(startTime / 1440)];
+            // checking if the day of week has been selected by the user
+            if (!daysChecked.has(dayOfWeek)) { continue }
             let startHour = Math.floor((startTime % 1440) / 60);
             let startMinute = startTime % 60;
             let endHour = Math.floor((endTime % 1440) / 60);
